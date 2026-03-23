@@ -6,10 +6,10 @@ const openrouter = createOpenAI({
 });
 
 export function getLanguageModel(modelId: string) {
-  // Forzamos el ID exacto que OpenRouter prefiere
-  return openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
+  // Usamos el ID exacto de Qwen 3 (free) que seleccionaste
+  return openrouter("qwen/qwen3-4b:free") as any;
 }
 
 export function getTitleModel() {
-  return openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
+  return openrouter("qwen/qwen3-4b:free") as any;
 }
