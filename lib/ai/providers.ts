@@ -1,14 +1,15 @@
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenAI } from '@ai-sdk/openai';
 
-const openrouter = createOpenRouter({
+// Esto es OpenRouter disfrazado para que Vercel no se queje
+const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1', 
 });
 
 export function getLanguageModel(modelId: string) {
-  // El "as any" le dice a TypeScript: "Tranquilo, yo sé lo que hago"
-  return openrouter(modelId) as any;
+  return openrouter(modelId);
 }
 
 export function getTitleModel() {
-  return openrouter("meta-llama/llama-3.1-8b-instruct:free") as any;
+  return openrouter("meta-llama/llama-3.1-8b-instruct:free");
 }
