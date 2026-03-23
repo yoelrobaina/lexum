@@ -16,23 +16,24 @@ import {
 } from "@/lib/db/queries";
 import { ChatbotError } from "@/lib/errors";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import type { DBMessage } from "@/lib/db/schema"; // Importación necesaria para el fix
 
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
-    const { id, message, messages: toolMessages, selectedChatModel } = await request.json();
+    const { id, message } = await request.json();
     const session = await auth();
 
     if (!session?.user) {
       return new ChatbotError("unauthorized:chat").toResponse();
     }
 
-    // Configuración de LexumIA: Forzamos el modelo gratuito de OpenRouter
+    // Configuración: Forzamos el modelo gratuito de OpenRouter
     const modelId = "meta-llama/llama-3-8b-instruct:free";
 
     const chat = await getChatById({ id });
-    let messagesFromDb = [];
+    let messagesFromDb: DBMessage[] = []; // FIX: Definimos el tipo explícitamente
 
     if (chat) {
       if (chat.userId !== session.user.id) {
@@ -51,7 +52,6 @@ export async function POST(request: Request) {
     const uiMessages = [...convertToUIMessages(messagesFromDb), message];
     const modelMessages = await convertToModelMessages(uiMessages);
 
-    // Guardar el mensaje del usuario antes de procesar
     if (message?.role === "user") {
       await saveMessages({
         messages: [{
@@ -68,16 +68,10 @@ export async function POST(request: Request) {
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
         const result = streamText({
-          // IMPORTANTE: Asegúrate de tener OPENAI_API_BASE=https://openrouter.ai/api/v1 en Vercel
           model: getLanguageModel(modelId),
-          system: `Eres LexumIA, el asistente de IA experto en guiones virales. 
-          Tu objetivo es transformar cualquier idea en un guion estructurado para redes sociales.
-          Instrucciones:
-          1. El usuario te dará un NICHO, una RED SOCIAL y un TEMA.
-          2. Genera un GANCHO potente (primeros 3 segundos).
-          3. Desarrolla el CUERPO con puntos de valor o curiosidad.
-          4. Termina con un CTA (Llamada a la acción) para seguir o comentar.
-          Tono: Natural, persuasivo y dinámico. No uses introducciones como "Aquí tienes tu guion", ve directo al texto.`,
+          system: `Eres LexumIA, experto en guiones virales. 
+          Genera guiones con GANCHO, CUERPO y CTA. 
+          No des introducciones, ve directo al texto del guion.`,
           messages: modelMessages,
           headers: {
             "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
