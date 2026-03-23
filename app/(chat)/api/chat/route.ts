@@ -16,7 +16,7 @@ import {
 } from "@/lib/db/queries";
 import { ChatbotError } from "@/lib/errors";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
-import type { DBMessage } from "@/lib/db/schema"; // Importación necesaria para el fix
+import type { DBMessage } from "@/lib/db/schema"; 
 
 export const maxDuration = 60;
 
@@ -29,11 +29,10 @@ export async function POST(request: Request) {
       return new ChatbotError("unauthorized:chat").toResponse();
     }
 
-    // Configuración: Forzamos el modelo gratuito de OpenRouter
-    const modelId = "meta-llama/llama-3-8b-instruct:free";
+    const modelId = "meta-llama/llama-3.1-8b-instruct:free";
 
     const chat = await getChatById({ id });
-    let messagesFromDb: DBMessage[] = []; // FIX: Definimos el tipo explícitamente
+    let messagesFromDb: DBMessage[] = []; 
 
     if (chat) {
       if (chat.userId !== session.user.id) {
@@ -77,10 +76,7 @@ export async function POST(request: Request) {
             "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
             "X-Title": "LexumIA",
           },
-          experimental_telemetry: {
-            isEnabled: isProductionEnvironment,
-            functionId: "lexumia-stream",
-          },
+          // FIX: Eliminamos experimental_telemetry para evitar error de token
         });
 
         dataStream.merge(result.toUIMessageStream());
