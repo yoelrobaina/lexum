@@ -1,16 +1,15 @@
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenAI } from '@ai-sdk/openai';
 
-// Configuramos OpenRouter directamente
-const openrouter = createOpenRouter({
+// Usamos el cliente de OpenAI pero apuntando a OpenRouter
+const openrouter = createOpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 export function getLanguageModel(modelId: string) {
-  // Aquí usamos el modelo de OpenRouter sin pasar por el 'gateway' de Vercel
   return openrouter(modelId);
 }
 
 export function getTitleModel() {
-  // Usamos el mismo proveedor para el título
   return openrouter("meta-llama/llama-3.1-8b-instruct:free");
 }
