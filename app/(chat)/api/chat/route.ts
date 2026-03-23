@@ -28,8 +28,8 @@ export async function POST(request: Request) {
       return new ChatbotError("unauthorized:chat").toResponse();
     }
 
-    // ACTUALIZADO: Usamos el ID de Gemini Flash Lite para mayor estabilidad en OpenRouter
-    const modelId = "google/gemini-2.0-flash-lite-preview-02-05:free";
+    // ACTUALIZADO: Usamos el ID de Qwen 3 para máxima velocidad y gratuidad
+    const modelId = "qwen/qwen3-4b:free";
 
     const chat = await getChatById({ id });
     let messagesFromDb: DBMessage[] = []; 
@@ -72,7 +72,6 @@ export async function POST(request: Request) {
           Genera guiones con GANCHO, CUERPO y CTA. 
           No des introducciones, ve directo al texto del guion.`,
           messages: modelMessages,
-          // La configuración del proveedor en lib/ai/providers.ts maneja los headers
         });
 
         dataStream.merge(result.toUIMessageStream());
