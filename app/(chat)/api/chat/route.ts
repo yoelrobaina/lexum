@@ -7,7 +7,6 @@ import {
 } from "ai";
 import { auth } from "@/app/(auth)/auth";
 import { getLanguageModel } from "@/lib/ai/providers";
-import { isProductionEnvironment } from "@/lib/constants";
 import {
   saveChat,
   saveMessages,
@@ -29,6 +28,7 @@ export async function POST(request: Request) {
       return new ChatbotError("unauthorized:chat").toResponse();
     }
 
+    // Usamos el ID de OpenRouter directamente
     const modelId = "meta-llama/llama-3.1-8b-instruct:free";
 
     const chat = await getChatById({ id });
@@ -72,11 +72,8 @@ export async function POST(request: Request) {
           Genera guiones con GANCHO, CUERPO y CTA. 
           No des introducciones, ve directo al texto del guion.`,
           messages: modelMessages,
-          headers: {
-            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            "X-Title": "LexumIA",
-          },
-          // FIX: Eliminamos experimental_telemetry para evitar error de token
+          // IMPORTANTE: Hemos quitado los headers manuales 
+          // porque ahora el proveedor se encarga de todo.
         });
 
         dataStream.merge(result.toUIMessageStream());
