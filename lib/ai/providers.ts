@@ -1,15 +1,15 @@
 import { createOpenAI } from '@ai-sdk/openai';
 
-// Esto es OpenRouter disfrazado para que Vercel no se queje
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: 'https://openrouter.ai/api/v1', 
+  baseURL: 'https://openrouter.ai/api/v1',
 });
 
 export function getLanguageModel(modelId: string) {
-  return openrouter(modelId);
+  // Forzamos el ID exacto que OpenRouter prefiere
+  return openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
 }
 
 export function getTitleModel() {
-  return openrouter("meta-llama/llama-3.1-8b-instruct:free");
+  return openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
 }
