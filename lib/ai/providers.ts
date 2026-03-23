@@ -1,8 +1,7 @@
-import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
-// Usamos el cliente de OpenAI pero apuntando a OpenRouter
-const openrouter = createOpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
+// Configuración pura de OpenRouter, sin rastro de OpenAI
+const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
